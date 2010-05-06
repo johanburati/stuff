@@ -18,14 +18,14 @@ SRC_VIDEOS="/mnt/autofs/sony-camera/MP_ROOT/101MNV01"
 DST_PHOTOS="/mnt/doc/photos"
 DST_VIDEOS="/mnt/doc/videos"
 
-mkDir () {
+dir_create () {
 # create a directory
     echo "   Create directory $1";
     mkdir -p $1
     if [ "$?" -ne 0 ]; then echo "   Error: Could not create directory ($1)"; exit 1; fi
 }
 
-mkTempDir () {
+dir_create_temp () {
 # create a tempory directory
     local TMP_BASEDIR=$(mktemp -d /home/$USER/tmp/cam-import-XXXXX)
     if [ ! -d $TMP_BASEDIR ]; then
@@ -34,7 +34,7 @@ mkTempDir () {
     echo "$TMP_BASEDIR"
 }
 
-rmDir () {
+dir_destroy () {
 # ask for confirmation and delete a directory
     local RM_DIR=$1
 
@@ -49,7 +49,7 @@ rmDir () {
                     if [ "$?" -eq 0 ]; then
                         echo -n '.'
                     else
-                        #echo "Warning(rmDir): Could not delete file ($RM_FILE) !";
+                        #echo "Warning(dir_destroy): Could not delete file ($RM_FILE) !";
                         echo -n 'x'
                     fi
                 else
@@ -58,24 +58,23 @@ rmDir () {
             done
             echo
             rmdir "$RM_DIR"
-            if [ "$?" -ne 0 ]; then echo "   Warning(rmDir): Could not delete directory ($RM_DIR) !"; fi
+            if [ "$?" -ne 0 ]; then echo "   Warning(dir_destroy): Could not delete directory ($RM_DIR) !"; fi
         else
             echo "   Warning: Could not find directory ($RM_DIR) !"
         fi
     fi
 }
 
-
-cpRenDir () {
+dir_copy_and_rename () {
 # copy and rename files according to their creation date
     local SRC_CP=$1
     local DST_CP=$2
     local CP_COUNT=0
     local CP_FILE
 
-    if [ ! -d $DST_CP ]; then echo "   Error(cpRenDir): Destination directory does not exist ($DST_CP) !"; exit 1; fi
+    if [ ! -d $DST_CP ]; then echo "   Error(dir_copy_and_rename): Destination directory does not exist ($DST_CP) !"; exit 1; fi
     for CP_FILE in $SRC_CP; do
-        local NEW_NAME=$(genNewName $CP_FILE)
+        local NEW_NAME=$(filename_generate $CP_FILE)
         cp "$CP_FILE" "$DST_CP/$NEW_NAME"
         if [ "$?" -eq 0 ]; then
             echo -n '.'
@@ -88,19 +87,19 @@ cpRenDir () {
     _RET="$CP_COUNT"
 }
 
-cpDocDir () {
+dir_copy_to_doc () {
 # copy date named file and put them in the according folder in the 'doc' directory
     local SRC_CP=$1
     local DST_CP=$2
     local CP_COUNT=0
     local CP_FILE
 
-    if [ ! -d $DST_CP ]; then echo "   Error(cpDocDir): Destination directory does not exist !"; exit 1; fi
+    if [ ! -d $DST_CP ]; then echo "   Error(dir_copy_to_doc): Destination directory does not exist !"; exit 1; fi
     for CP_FILE in $TMP_DIR/*.$LEXT; do
         local BASE_NAME=$(basename $CP_FILE)
         local YEAR=$(expr substr $BASE_NAME 1 4)
         local MONTH=$(expr substr $BASE_NAME 5 2)
-        if [ ! -d $DST_DIR/$YEAR/$MONTH ]; then echo; mkDir "$DST_DIR/$YEAR/$MONTH"; fi
+        if [ ! -d $DST_DIR/$YEAR/$MONTH ]; then echo; dir_create "$DST_DIR/$YEAR/$MONTH"; fi
         if [ ! -f $DST_DIR/$YEAR/$MONTH/$BASE_NAME ]; then
             cp $CP_FILE $DST_DIR/$YEAR/$MONTH/
             if [ "$?" -eq 0 ]; then
@@ -117,7 +116,7 @@ cpDocDir () {
     _RET="$CP_COUNT"
 }
 
-setDir () {
+directories_set () {
 # set and verify the directories
     local FILES_TYPE=$1
     if [ $FILES_TYPE == "photos" ]; then
@@ -131,19 +130,19 @@ setDir () {
         EXT="MP4"
         LEXT="mp4"
     else
-        echo "   Error (camImport): unknown type specfied '$FILES_TYPE) !"
+        echo "   Error (cam_import): unknown type specfied '$FILES_TYPE) !"
         exit 1
     fi
-    TMP_DIR=$(mkTempDir)
+    TMP_DIR=$(dir_create_temp)
 
     if [ ! -d $SRC_DIR ]; then echo "   Error: Can't find source directory ($SRV_DIR)"; exit 1; fi
     if [ ! -d $DST_DIR ]; then echo "   Error: Can't find destination directory ($DST_DIR)"; exit 1; fi
     if [ ! -d $TMP_DIR ]; then echo "   Error: Can't find temporary directory ($TMP_DIR)"; exit 1; fi
 }
 
-genNewName () {
+filename_generate () {
 # generate a new name for the file according to its creation date
-    if [ -z $1 ]; then echo "   Error(genNewName): you must specify a parameter !"; exit 1; fi
+    if [ -z $1 ]; then echo "   Error(filename_generate): you must specify a parameter !"; exit 1; fi
     local FILE_NAME=$1
 
     local NEW_FILE_NAME=$(expr substr $(stat --format=%y $FILE_NAME  | tr ' ' '_' |  tr -d '\:-') 1 15).$LEXT
@@ -165,7 +164,7 @@ genNewName () {
     echo "$NEW_FILE_NAME"
 }
 
-checkCam() {
+cam_is_connected() {
 # check if the camera is connected
     if [ ! -e $USB_CAMERA ]; then
         echo "   Error: camera is not connected !"
@@ -173,41 +172,41 @@ checkCam() {
     fi
 }
 
-camImport () {
+cam_import () {
 # import photos or videos from the camera
     local FILES_TYPE=$1
 
     #:NOTE: set the SRC_DIR,DST_DIR, TMP_DIR and EXT, LEXT variables
-    setDir $FILES_TYPE
+    directories_set $FILES_TYPE
 
     #:NOTE: SRC_COUNT can be useful for a progress bar for the copy operation
     local SRC_COUNT=$(ls -1 $SRC_DIR/*.$EXT | grep -ic "$EXT$")
 
     #:NOTE: copy files from camera to TMP_DIR
     echo "++ Importing $FILES_TYPE from camera to '$TMP_DIR'"
-    cpRenDir "$SRC_DIR/*.$EXT" "$TMP_DIR"
+    dir_copy_and_rename "$SRC_DIR/*.$EXT" "$TMP_DIR"
     TMP_COUNT=$_RET
 
     #:NOTE: move files from TMP_DIR to the documents folder
     echo "++ Moving $FILES_TYPE to doc folder '$DST_DIR'"
-    cpDocDir "$TMP_DIR/*.$LEXT" "$DST_DIR"
+    dir_copy_to_doc "$TMP_DIR/*.$LEXT" "$DST_DIR"
     DST_COUNT=$_RET
 
     #:NOTE: verify the number of files copied
     echo "++ Checks/Cleanup"
     echo "++ Done, $SRC_COUNT/$TMP_COUNT/$DST_COUNT $FILES_TYPE copied."
 
-    rmDir $TMP_DIR
+    dir_destroy $TMP_DIR
 }
 
 main () {
     echo 'cam-import (1) - imports photos and videos from usb camera'
-    checkCam
+    cam_is_connected
 
     echo "+ Imports Photos"
-    camImport photos
+    cam_import photos
     echo "+ Imports Videos"
-    camImport videos
+    cam_import videos
 
     gthumb $DST_DIR >/dev/null 2>&1 &
     echo '+ Completed !'
