@@ -4,12 +4,11 @@ johanburati's stuff repository
 
 =head1 DESCRIPTION
 
-Various scripts for various tasks
-written by Johan Burati
+Various scripts written by Johan Burati (johan.burati@gmail.com)
 
 =head1 COPYRIGHT
 
-Copyright 2010 Johan Burati
+Copyright 2010 Johan Burati (johan.burati@gmail.com)
 
 Permission is granted to copy, distribute and/or modify this
 document under the terms of the GNU Free Documentation
