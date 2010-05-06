@@ -122,14 +122,12 @@ beep() {
     fi
 }
 
-
 main() {
     FW_SETENV="uboot/uboot-env/fw_setenv"
     mustbe_root
     set_install_target
     load_ftdi_sio
 
-    # Update environment variable file image
     echo "+ Update environment variables file image (uboot/uboot-env.bin)";
     reset_uboot_env
     update_uboot_env
