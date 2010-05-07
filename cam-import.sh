@@ -104,7 +104,7 @@ dir_copy_to_doc () {
             cp $CP_FILE $DST_DIR/$YEAR/$MONTH/
             if [ "$?" -eq 0 ]; then
                 echo -n '.'
-                let DST_COUNT=$DST_COUNT+1
+                let CP_COUNT=$CP_COUNT+1
             else
                 echo -n 'x'
             fi
