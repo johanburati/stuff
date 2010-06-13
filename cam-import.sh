@@ -12,11 +12,11 @@
 #
 
 #:NOTE: you probably want to change the five variables below
-USB_CAMERA="/dev/sony-camera"
-SRC_PHOTOS="/mnt/autofs/sony-camera/DCIM/101MSDCF"
-SRC_VIDEOS="/mnt/autofs/sony-camera/MP_ROOT/101MNV01"
-DST_PHOTOS="/mnt/doc/photos"
-DST_VIDEOS="/mnt/doc/videos"
+usb_camera="/dev/sony-camera"
+src_photos="/mnt/autofs/sony-camera/DCIM/101MSDCF"
+src_videos="/mnt/autofs/sony-camera/MP_ROOT/101MNV01"
+dst_photos="/mnt/doc/photos"
+dst_videos="/mnt/doc/videos"
 
 dir_create () {
 # create a directory
@@ -27,29 +27,29 @@ dir_create () {
 
 dir_create_temp () {
 # create a tempory directory
-    local TMP_BASEDIR=$(mktemp -d /home/$USER/tmp/cam-import-XXXXX)
-    if [ ! -d $TMP_BASEDIR ]; then
-       echo "   Error: Temp directory was not created ($TMP_BASEDIR)"; exit 1;
+    local tmp_basedir=$(mktemp -d /home/$USER/tmp/cam-import-XXXXX)
+    if [ ! -d $tmp_basedir ]; then
+       echo "   Error: Temp directory was not created ($tmp_basedir)"; exit 1;
     fi
-    echo "$TMP_BASEDIR"
+    echo "$tmp_basedir"
 }
 
 dir_destroy () {
 # ask for confirmation and delete a directory
-    local RM_DIR=$1
+    local rm_dir=$1
 
-    read -s -n1 -p "   Delete directory ($RM_DIR)? (y/n)" KEY; echo
-    if [ "$KEY" == "y" ]; then
-        if [ -d $RM_DIR ]; then
-            local RM_FILE
-            for RM_FILE in $RM_DIR/*; do
-                echo $RM_FILE | egrep -q "(.jpg|.mp4)$"
+    read -s -n1 -p "   Delete directory ($rm_dir)? (y/n)" key; echo
+    if [ "$key" == "y" ]; then
+        if [ -d $rm_dir ]; then
+            local rm_file
+            for rm_file in $rm_dir/*; do
+                echo $rm_file | egrep -q "(.jpg|.mp4)$"
                 if [ "$?" -eq 0 ]; then
-                    rm $RM_FILE
+                    rm $rm_file
                     if [ "$?" -eq 0 ]; then
                         echo -n '.'
                     else
-                        #echo "Warning(dir_destroy): Could not delete file ($RM_FILE) !";
+                        #echo "Warning(dir_destroy): Could not delete file ($rm_file) !";
                         echo -n 'x'
                     fi
                 else
@@ -57,54 +57,54 @@ dir_destroy () {
                 fi
             done
             echo
-            rmdir "$RM_DIR"
-            if [ "$?" -ne 0 ]; then echo "   Warning(dir_destroy): Could not delete directory ($RM_DIR) !"; fi
+            rmdir "$rm_dir"
+            if [ "$?" -ne 0 ]; then echo "   Warning(dir_destroy): Could not delete directory ($rm_dir) !"; fi
         else
-            echo "   Warning: Could not find directory ($RM_DIR) !"
+            echo "   Warning: Could not find directory ($rm_dir) !"
         fi
     fi
 }
 
 dir_copy_and_rename () {
 # copy and rename files according to their creation date
-    local SRC_CP=$1
-    local DST_CP=$2
-    local CP_COUNT=0
-    local CP_FILE
+    local src_cp=$1
+    local dst_cp=$2
+    local cp_count=0
+    local cp_file
 
-    if [ ! -d $DST_CP ]; then echo "   Error(dir_copy_and_rename): Destination directory does not exist ($DST_CP) !"; exit 1; fi
-    for CP_FILE in $SRC_CP; do
-        local NEW_NAME=$(filename_generate $CP_FILE)
-        cp "$CP_FILE" "$DST_CP/$NEW_NAME"
+    if [ ! -d $dst_cp ]; then echo "   Error(dir_copy_and_rename): Destination directory does not exist ($dst_cp) !"; exit 1; fi
+    for cp_file in $src_cp; do
+        local new_name=$(filename_generate $cp_file)
+        cp "$cp_file" "$dst_cp/$new_name"
         if [ "$?" -eq 0 ]; then
             echo -n '.'
-            let CP_COUNT=$CP_COUNT+1
+            let cp_count=$cp_count+1
         else
             echo -n 'x'
         fi
     done
     echo
-    _RET="$CP_COUNT"
+    _ret="$cp_count"
 }
 
 dir_copy_to_doc () {
 # copy date named file and put them in the according folder in the 'doc' directory
-    local SRC_CP=$1
-    local DST_CP=$2
-    local CP_COUNT=0
-    local CP_FILE
+    local src_cp=$1
+    local dst_cp=$2
+    local cp_count=0
+    local cp_file
 
-    if [ ! -d $DST_CP ]; then echo "   Error(dir_copy_to_doc): Destination directory does not exist !"; exit 1; fi
-    for CP_FILE in $TMP_DIR/*.$LEXT; do
-        local BASE_NAME=$(basename $CP_FILE)
-        local YEAR=$(expr substr $BASE_NAME 1 4)
-        local MONTH=$(expr substr $BASE_NAME 5 2)
-        if [ ! -d $DST_DIR/$YEAR/$MONTH ]; then echo; dir_create "$DST_DIR/$YEAR/$MONTH"; fi
-        if [ ! -f $DST_DIR/$YEAR/$MONTH/$BASE_NAME ]; then
-            cp $CP_FILE $DST_DIR/$YEAR/$MONTH/
+    if [ ! -d $dst_cp ]; then echo "   Error(dir_copy_to_doc): Destination directory does not exist !"; exit 1; fi
+    for cp_file in $tmp_dir/*.$lext; do
+        local base_name=$(basename $cp_file)
+        local year=$(expr substr $base_name 1 4)
+        local month=$(expr substr $base_name 5 2)
+        if [ ! -d $dst_dir/$year/$month ]; then echo; dir_create "$dst_dir/$year/$month"; fi
+        if [ ! -f $dst_dir/$year/$month/$base_name ]; then
+            cp $cp_file $dst_dir/$year/$month/
             if [ "$?" -eq 0 ]; then
                 echo -n '.'
-                let CP_COUNT=$CP_COUNT+1
+                let cp_count=$cp_count+1
             else
                 echo -n 'x'
             fi
@@ -113,60 +113,60 @@ dir_copy_to_doc () {
         fi
     done
     echo
-    _RET="$CP_COUNT"
+    _ret="$cp_count"
 }
 
 directories_set () {
 # set and verify the directories
-    local FILES_TYPE=$1
-    if [ $FILES_TYPE == "photos" ]; then
-        SRC_DIR="$SRC_PHOTOS"
-        DST_DIR="$DST_PHOTOS"
-        EXT="JPG"
-        LEXT="jpg"
-    elif [ $FILES_TYPE == "videos" ]; then
-        SRC_DIR="$SRC_VIDEOS"
-        DST_DIR="$DST_VIDEOS"
-        EXT="MP4"
-        LEXT="mp4"
+    local files_type=$1
+    if [ $files_type == "photos" ]; then
+        src_dir="$src_photos"
+        dst_dir="$dst_photos"
+        ext="JPG"
+        lext="jpg"
+    elif [ $files_type == "videos" ]; then
+        src_dir="$src_videos"
+        dst_dir="$dst_videos"
+        ext="MP4"
+        lext="mp4"
     else
-        echo "   Error (cam_import): unknown type specfied '$FILES_TYPE) !"
+        echo "   Error (cam_import): unknown type specfied '$files_type) !"
         exit 1
     fi
-    TMP_DIR=$(dir_create_temp)
+    tmp_dir=$(dir_create_temp)
 
-    if [ ! -d $SRC_DIR ]; then echo "   Error: Can't find source directory ($SRV_DIR)"; exit 1; fi
-    if [ ! -d $DST_DIR ]; then echo "   Error: Can't find destination directory ($DST_DIR)"; exit 1; fi
-    if [ ! -d $TMP_DIR ]; then echo "   Error: Can't find temporary directory ($TMP_DIR)"; exit 1; fi
+    if [ ! -d $src_dir ]; then echo "   Error: Can't find source directory ($SRV_DIR)"; exit 1; fi
+    if [ ! -d $dst_dir ]; then echo "   Error: Can't find destination directory ($dst_dir)"; exit 1; fi
+    if [ ! -d $tmp_dir ]; then echo "   Error: Can't find temporary directory ($tmp_dir)"; exit 1; fi
 }
 
 filename_generate () {
 # generate a new name for the file according to its creation date
     if [ -z $1 ]; then echo "   Error(filename_generate): you must specify a parameter !"; exit 1; fi
-    local FILE_NAME=$1
+    local file_name=$1
 
-    local NEW_FILE_NAME=$(expr substr $(stat --format=%y $FILE_NAME  | tr ' ' '_' |  tr -d '\:-') 1 15).$LEXT
+    local new_file_name=$(expr substr $(stat --format=%y $file_name  | tr ' ' '_' |  tr -d '\:-') 1 15).$lext
     # if the new_name already exist, increment
-    if [ -f "$TMP_DIR/$NEW_FILE_NAME" ]; then
-        CNT=1
-        local TMP_FILE_NAME=$(expr substr $(stat --format=%y $FILE_NAME  | tr ' ' '_' |  tr -d '\:-') 1 15)_$(printf %02d $CNT).$LEXT
-        while [ -f  "$TMP_DIR/$TMP_FILE_NAME" ]; do
-            CNT=$(($CNT + 1))
-            TMP_FILE_NAME=$(expr substr $(stat --format=%y $FILE_NAME  | tr ' ' '_' |  tr -d '\:-') 1 15)_$(printf %02d $CNT).$LEXT
+    if [ -f "$tmp_dir/$new_file_name" ]; then
+        cnt=1
+        local tmp_file_name=$(expr substr $(stat --format=%y $file_name  | tr ' ' '_' |  tr -d '\:-') 1 15)_$(printf %02d $cnt).$lext
+        while [ -f  "$tmp_dir/$tmp_file_name" ]; do
+            cnt=$(($cnt + 1))
+            tmp_file_name=$(expr substr $(stat --format=%y $file_name  | tr ' ' '_' |  tr -d '\:-') 1 15)_$(printf %02d $cnt).$lext
         done
-        NEW_FILE_NAME=$TMP_FILE_NAME
-        if [ -f "$TMP_DIR/$NEW_FILE_NAME" ]; then
+        new_file_name=$tmp_file_name
+        if [ -f "$tmp_dir/$new_file_name" ]; then
             echo
-            echo "   Error: Cannot find non-duplicate name for $TMP_DIR/$FILE_NAME"
+            echo "   Error: Cannot find non-duplicate name for $tmp_dir/$file_name"
             exit 1
         fi
     fi
-    echo "$NEW_FILE_NAME"
+    echo "$new_file_name"
 }
 
 cam_is_connected() {
 # check if the camera is connected
-    if [ ! -e $USB_CAMERA ]; then
+    if [ ! -e $usb_camera ]; then
         echo "   Error: camera is not connected !"
         exit 1
     fi
@@ -174,29 +174,29 @@ cam_is_connected() {
 
 cam_import () {
 # import photos or videos from the camera
-    local FILES_TYPE=$1
+    local files_type=$1
 
-    #:NOTE: set the SRC_DIR,DST_DIR, TMP_DIR and EXT, LEXT variables
-    directories_set $FILES_TYPE
+    #:NOTE: set the src_dir,dst_dir, tmp_dir and ext, lext variables
+    directories_set $files_type
 
-    #:NOTE: SRC_COUNT can be useful for a progress bar for the copy operation
-    local SRC_COUNT=$(ls -1 $SRC_DIR/*.$EXT 2>/dev/null| grep -ic "$EXT$")
-    if [[ "$SRC_COUNT" > 0 ]]; then
-        #:NOTE: copy files from camera to TMP_DIR
-        echo "++ Importing $FILES_TYPE from camera to '$TMP_DIR'"
-        dir_copy_and_rename "$SRC_DIR/*.$EXT" "$TMP_DIR"
-        TMP_COUNT=$_RET
+    #:NOTE: src_count can be useful for a progress bar for the copy operation
+    local src_count=$(ls -1 $src_dir/*.$ext 2>/dev/null| grep -ic "$ext$")
+    if [[ "$src_count" > 0 ]]; then
+        #:NOTE: copy files from camera to tmp_dir
+        echo "++ Importing $files_type from camera to '$tmp_dir'"
+        dir_copy_and_rename "$src_dir/*.$ext" "$tmp_dir"
+        tmp_count=$_ret
 
-        #:NOTE: move files from TMP_DIR to the documents folder
-        echo "++ Moving $FILES_TYPE to doc folder '$DST_DIR'"
-        dir_copy_to_doc "$TMP_DIR/*.$LEXT" "$DST_DIR"
-        DST_COUNT=$_RET
+        #:NOTE: move files from tmp_dir to the documents folder
+        echo "++ Moving $files_type to doc folder '$dst_dir'"
+        dir_copy_to_doc "$tmp_dir/*.$lext" "$dst_dir"
+        dst_count=$_ret
 
         #:NOTE: verify the number of files copied
         echo "++ Checks/Cleanup"
-        echo "++ Done, $SRC_COUNT/$TMP_COUNT/$DST_COUNT $FILES_TYPE copied."
+        echo "++ Done, $src_count/$tmp_count/$dst_count $files_type copied."
 
-        dir_destroy $TMP_DIR
+        dir_destroy $tmp_dir
     else
         echo "++ No file found !"
     fi
@@ -211,7 +211,7 @@ main () {
     echo "+ Imports Videos"
     cam_import videos
 
-    gthumb $DST_PHOTOS >/dev/null 2>&1 &
+    gthumb $dst_photos >/dev/null 2>&1 &
     echo '+ Completed !'
 }
 
