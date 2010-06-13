@@ -180,23 +180,26 @@ cam_import () {
     directories_set $FILES_TYPE
 
     #:NOTE: SRC_COUNT can be useful for a progress bar for the copy operation
-    local SRC_COUNT=$(ls -1 $SRC_DIR/*.$EXT | grep -ic "$EXT$")
+    local SRC_COUNT=$(ls -1 $SRC_DIR/*.$EXT 2>/dev/null| grep -ic "$EXT$")
+    if [[ "$SRC_COUNT" > 0 ]]; then
+        #:NOTE: copy files from camera to TMP_DIR
+        echo "++ Importing $FILES_TYPE from camera to '$TMP_DIR'"
+        dir_copy_and_rename "$SRC_DIR/*.$EXT" "$TMP_DIR"
+        TMP_COUNT=$_RET
 
-    #:NOTE: copy files from camera to TMP_DIR
-    echo "++ Importing $FILES_TYPE from camera to '$TMP_DIR'"
-    dir_copy_and_rename "$SRC_DIR/*.$EXT" "$TMP_DIR"
-    TMP_COUNT=$_RET
+        #:NOTE: move files from TMP_DIR to the documents folder
+        echo "++ Moving $FILES_TYPE to doc folder '$DST_DIR'"
+        dir_copy_to_doc "$TMP_DIR/*.$LEXT" "$DST_DIR"
+        DST_COUNT=$_RET
 
-    #:NOTE: move files from TMP_DIR to the documents folder
-    echo "++ Moving $FILES_TYPE to doc folder '$DST_DIR'"
-    dir_copy_to_doc "$TMP_DIR/*.$LEXT" "$DST_DIR"
-    DST_COUNT=$_RET
+        #:NOTE: verify the number of files copied
+        echo "++ Checks/Cleanup"
+        echo "++ Done, $SRC_COUNT/$TMP_COUNT/$DST_COUNT $FILES_TYPE copied."
 
-    #:NOTE: verify the number of files copied
-    echo "++ Checks/Cleanup"
-    echo "++ Done, $SRC_COUNT/$TMP_COUNT/$DST_COUNT $FILES_TYPE copied."
-
-    dir_destroy $TMP_DIR
+        dir_destroy $TMP_DIR
+    else
+        echo "++ No file found !"
+    fi
 }
 
 main () {
@@ -208,7 +211,7 @@ main () {
     echo "+ Imports Videos"
     cam_import videos
 
-    gthumb $DST_DIR >/dev/null 2>&1 &
+    gthumb $DST_PHOTOS >/dev/null 2>&1 &
     echo '+ Completed !'
 }
 

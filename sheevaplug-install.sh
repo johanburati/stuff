@@ -92,14 +92,14 @@ burn_uboot() {
     echo "+ Burning uboot and environment variables, this will take a few minutes..."
     cd uboot
     if [ "$?" -ne 0 ]; then echo "  Error: Did not find 'uboot' directory !"; exit 1; fi
-    OPENOCD_CMD=$(which openocd)
+    OPENOCD_CMD='openocd/openocd'
     if [ "$?" -ne 0 ]; then echo "  Error: Please install openocd on your system";  exit 1; fi
-    if [ ! -f /usr/share/openocd/scripts/board/sheevaplug.cfg ]; then echo "  Error: Could not find sheevaplug.cfg";  exit 1; fi
+    if [ ! -f openocd/config/board/sheevaplug.cfg ]; then echo "  Error: Could not find sheevaplug.cfg";  exit 1; fi
 
     OPENOCD_CMD="$OPENOCD_CMD
-     -d3
-     -f /usr/share/openocd/scripts/board/sheevaplug.cfg
-     -s /usr/share/openocd/scripts/
+#     -d3
+     -f openocd/config/board/sheevaplug.cfg
+     -s openocd/config/
      -c init
      -c sheevaplug_reflash_uboot_env
      -c sheevaplug_reflash_uboot
