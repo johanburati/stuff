@@ -12,7 +12,7 @@ my $threshold_yellow = 40;
 my $threshold_red = 80;
 
 # deals with the options
-my $sar_cmd = "/usr/bin/sar -r";
+my $sar_cmd = "env LANG=C /usr/bin/sar -r";
 my ($o_start, $o_end, $o_filename, $o_interval, $o_mega, $o_color);
 GetOptions("s:s" => \$o_start, "e:s" => \$o_end, "f:s" => \$o_filename, "i:s" => \$o_interval, "m" => \$o_mega, "c" => \$o_color);
 $sar_cmd .= " -s $o_start" if defined $o_start;
