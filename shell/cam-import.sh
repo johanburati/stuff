@@ -13,8 +13,10 @@
 
 #:NOTE: you probably want to change the five variables below
 usb_camera="/dev/sony-camera"
-src_photos="/mnt/autofs/sony-camera/DCIM/101MSDCF"
-src_videos="/mnt/autofs/sony-camera/MP_ROOT/101MNV01"
+#src_root="/mnt/autofs/sony-camera"
+src_root="/media/disk"
+src_photos="$src_root/DCIM/101MSDCF"
+src_videos="$src_root/MP_ROOT/101MNV01"
 dst_photos="/mnt/doc/photos"
 dst_videos="/mnt/doc/videos"
 
@@ -166,7 +168,8 @@ filename_generate () {
 
 cam_is_connected() {
 # check if the camera is connected
-    if [ ! -e $usb_camera ]; then
+#    if [ ! -e $usb_camera ]; then
+    if [ ! -e $src_photos ]; then
         echo "   Error: camera is not connected !"
         exit 1
     fi
@@ -208,10 +211,15 @@ main () {
 
     echo "+ Imports Photos"
     cam_import photos
-    echo "+ Imports Videos"
-    cam_import videos
 
-    gthumb $dst_photos >/dev/null 2>&1 &
+    read -s -n1 -p "   Do you want to import the videos ? (y/n)" key; echo
+    if [ "$key" == "y" ]; then
+        echo "+ Imports Videos"
+        cam_import videos
+    fi
+
+    #gthumb $dst_photos >/dev/null 2>&1 &
+    shotwell
     echo '+ Completed !'
 }
 
