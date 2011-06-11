@@ -219,6 +219,9 @@ main () {
     fi
 
     #gthumb $dst_photos >/dev/null 2>&1 &
+    # Start up shotwell
+    # At this time there is no command line parameter to import a folder so
+    # we need to import the folder manually
     shotwell
     echo '+ Completed !'
 }
