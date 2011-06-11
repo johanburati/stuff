@@ -1,14 +1,17 @@
 #!/bin/sh
-# 
+#
 # This script use Google Translate to translate a word or phrase.
+# In Japan, the EUC-JP encoding is heavily used on Unix-like operating systems
+# so we need to convert the text between EUC-JP and UTF-8.
+# The user should export a variable ENCODING=EUC-JP if he use EUC-JP encoding
 #
 # Johan Burati (johan.burati@gmail.com)
 # Code is licensed under GNU GPL license.
 #
 shopt -s nocasematch
-eucjp=1
 url="http://ajax.googleapis.com/ajax/services/language/translate"
 
+# In Japan, the EUC-JP encoding is heavily used by Unix or Unix-like operating systemsdd
 eucjp_to_utf8 () {
    echo "$1" | iconv -sc -f euc-jp -t utf-8;
 }
@@ -23,8 +26,8 @@ then
   exit -1 
 else
    input=$1;from=${2:-en}; to=${3:-fr};
-   if [[ $eucjp && $from == "ja" ]]; then input=$(eucjp_to_utf8 "$input"); fi
+   if [[ $from == "ja" && $ENCODING == "EUC-JP" ]]; then input=$(eucjp_to_utf8 "$input"); fi
    output=$(curl -s -d "v=1.0" --data-urlencode "q=${input}" -d "langpair=${from}|${to}" $url | perl -lane 'print $1 if /"translatedText":"(.+?)"/') 
-   if [[ $eucjp && $to == "ja" ]]; then output=$(utf8_to_eucjp "$output"); fi 
+   if [[ $to == "ja" && $ENCODING == "ENC-JP" ]]; then output=$(utf8_to_eucjp "$output"); fi 
    echo "$output"
 fi
