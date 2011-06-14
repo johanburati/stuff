@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 #
-# Johan Burati (johan.burati@gmail.com)
+# This script format the output of sar command,
+# run 'perldoc sarr.pl' for more information.
+#
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 use strict;

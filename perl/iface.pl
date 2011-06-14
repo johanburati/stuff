@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 #
-# This script show the amount of data receiveid and sent on each interface
+# This script show the amount of data transmitted on each interfaces.
+# Run 'perldoc iface.pl' for more information.
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 use strict;
@@ -71,4 +72,32 @@ sub main {
 }
 
 main();
+
 __END__
+=head1 NAME
+
+   iface - Display the amount of data sent and the received for each interface.
+
+=head1 SYNOPSIS
+
+   iface [-h] [-m|-b] [-c]
+
+=head1 DESCRIPTION
+
+   Display the amount of data sent and the received for each interface.
+   Those value got reset when the system is rebooted or when the network driver is reloaded.
+   For a bond interface show the active (marked by a *) and passive links.
+
+=head1 OPTIONS
+
+   -h	 Display the header
+   -m	 Display the value in MiB (default GiB)
+   -b	 Display the value in bytes (default GiB)
+   -c    Use color, green and red if there are any kind of error on the interface
+
+=head1 AUTHOR
+
+   Johan Burati <johan.burati@gmail.com>
+
+=cut
+
