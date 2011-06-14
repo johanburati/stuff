@@ -72,7 +72,6 @@ __END__
    Format the output of the 'sar' command to give a more relevant view of the system memory usage.
    Add (kbbuffers+kbcached) to kbmemfree and substract if from kbmemused and recalculate the %memused
 
-
 =head1 OPTIONS
 
    -s	 Start time.
