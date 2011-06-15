@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+#
+# This script report running processes,,,,
+# run 'perldoc pss.pl' for more information.
+#
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
+# Code is licensed under GNU GPL license.
+#
 use strict;
 use warnings;
 use Getopt::Long;
@@ -143,4 +150,34 @@ sub load_current {
    }
    close $fh;
 }
+
+=headd1 NAME
+
+   pss - report running processes
+
+=head1 SYNOPSIS
+
+   pss [-d] [-v]
+
+=head1 DESCRIPTION
+
+   Get a list of running processes and compare it to a list of processes that should be running,
+   then reports the processes that should be running but are not and the process that are running
+   but should not.
+
+=head1 OPTIONS
+
+   -d    Dump the running processes, can be used to created the /etc/pss/base file
+   -v    Verbose, print a description for the process
+
+=head1 FILES
+
+   /etc/pss/base  List of processes that should be running
+   /etc/pss/desc  Description of processes
+
+=head1 AUTHOR
+
+   Johan Burati <johan.burati@gmail.com>
+
+=cut
 
