@@ -1,9 +1,15 @@
 #!/bin/sh
 #
 # This script use Google Translate to translate a word or phrase.
-# In Japan, the EUC-JP encoding is heavily used on Unix-like operating systems
-# so we need to convert the text between EUC-JP and UTF-8.
-# The user should export a variable ENCODING=EUC-JP if he use EUC-JP encoding
+#
+# In Japan, the EUC-JP encoding is heavily used on Unix-like operating systems,
+# Google Translate on the other hand deals with UTF-8.
+# Therefore in case the user use a EUC-JP compatible terminal, we need to convert
+# the text between EUC-JP and UTF-8.
+#
+# I do not know of any way to determine the encoding the user is using,
+# so for this script to work on a EUC-JP terminal the user should export
+# an ENCODING=EUC-JP variable.
 #
 # Johan Burati (johan.burati@gmail.com)
 # Code is licensed under GNU GPL license.
