@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
-# This script format the output of sar command,
-# run 'perldoc sarr.pl' for more information.
+# Wrapper for the Unix 'sar' command.
+# Run 'perldoc sarr.pl' for more information.
 #
 # Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
@@ -61,7 +61,7 @@ __END__
 
 =head1 NAME
 
-   sarr - report system memory activity information.
+   sarr - report system memory usage information.
 
 =head1 SYNOPSIS
 
@@ -69,7 +69,7 @@ __END__
 
 =head1 DESCRIPTION
 
-   Format the output of the 'sar' command to give a more relevant view of the system memory usage.
+   Wrapper for the Unix 'sar' command to give a more relevant view of the system memory usage.
    Add (kbbuffers+kbcached) to kbmemfree and substract if from kbmemused and recalculate the %memused
 
 =head1 OPTIONS
