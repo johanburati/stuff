@@ -34,6 +34,6 @@ else
    input=$1;from=${2:-en}; to=${3:-fr};
    if [[ $from == "ja" && $ENCODING == "EUC-JP" ]]; then input=$(eucjp_to_utf8 "$input"); fi
    output=$(curl -s -d "v=1.0" --data-urlencode "q=${input}" -d "langpair=${from}|${to}" $url | perl -lane 'print $1 if /"translatedText":"(.+?)"/') 
-   if [[ $to == "ja" && $ENCODING == "ENC-JP" ]]; then output=$(utf8_to_eucjp "$output"); fi 
+   if [[ $to == "ja" && $ENCODING == "EUC-JP" ]]; then output=$(utf8_to_eucjp "$output"); fi 
    echo "$output"
 fi
