@@ -2,7 +2,7 @@
 #
 # gpg-keysid.sh - list private and public keys short id.
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 
 cmd=gpg

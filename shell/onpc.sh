@@ -5,7 +5,7 @@
 # Ce script extrait l'URL MMS pour l'e'mission courante d' "On n'est pas couche'"
 # et lance VLC.
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 

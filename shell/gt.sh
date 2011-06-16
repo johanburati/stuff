@@ -11,7 +11,7 @@
 # so for this script to work on a EUC-JP terminal the user should export
 # an ENCODING=EUC-JP variable.
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 shopt -s nocasematch

@@ -7,7 +7,7 @@
 # filename format is: yyyymmdd_hhmmss.jpg (ex: 20100121_153312.jpg)
 # folder structure is: basefolder/yyyy/mm/ (ex: basefolder/2010/01/)
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 

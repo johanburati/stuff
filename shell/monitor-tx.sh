@@ -12,7 +12,7 @@
 # Requirements:
 # vnstat
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 
 

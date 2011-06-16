@@ -4,7 +4,7 @@
 # that comes with the sheevaplug-installer-v1.0.tar.gz
 # since the php script does not work on fedora 12 x86_64.
 #
-# Johan Burati (johan.burati@gmail.com)
+# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
 # Code is licensed under GNU GPL license.
 #
 
