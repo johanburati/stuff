@@ -19,6 +19,7 @@ sub load_list {
    my ($plist, $file) = @_;
    open(my $fh,"<",$file) or die "Stopped '$!'";
    while(<$fh>) {
+      next if (/^\s+$/);  # skip blank lines
       chomp();
       my @f = split(/\s+/);
       $$plist{$_} = 1;
