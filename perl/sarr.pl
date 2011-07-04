@@ -24,7 +24,7 @@ $sar_cmd .= " -f $o_filename" if defined $o_filename;
 $sar_cmd .= " -i $o_interval" if defined $o_interval;
 
 # find out number of rows that fit on the screen
-my $stty = `/bin/stty -a`; my ($row) = $stty =~ /rows (\d+)/; my $crow = 0;
+my $stty = `/bin/stty -a`; my ($row) = $stty =~ /rows (\d+)/; $row=30 if (not defined $row); my $crow = 0;
 my $header = "\n           kbmemfree  kbmemused  %memused\n";
 $header    = "\n           mbmemfree  mbmemused  %memused\n" if $o_mega;
 
