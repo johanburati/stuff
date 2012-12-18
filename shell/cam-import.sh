@@ -17,8 +17,8 @@ usb_camera="/dev/sony-camera"
 src_root="/media/disk"
 src_photos="$src_root/DCIM/101MSDCF"
 src_videos="$src_root/MP_ROOT/101MNV01"
-dst_photos="/mnt/doc/photos"
-dst_videos="/mnt/doc/videos"
+dst_photos="$HOME/doc/photos"
+dst_videos="$HOME/doc/videos"
 
 dir_create () {
 # create a directory
@@ -222,7 +222,7 @@ main () {
     # Start up shotwell
     # At this time there is no command line parameter to import a folder so
     # we need to import the folder manually
-    shotwell
+    #shotwell
     echo '+ Completed !'
 }
 

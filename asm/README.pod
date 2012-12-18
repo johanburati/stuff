@@ -1,0 +1,25 @@
+=head1 DESCRIPTION
+
+Assembly source code
+
+=head1 COMPILE
+
+To compile under fedora x86_64:
+    nasm -f elf64 -l hello64.lst  hello64.asm
+To check that the object file is 64bits:
+    objdum -Sr hello64.obj
+Link:
+    ld -o hello hello.o -melf_x86_64
+
+
+=head1 COPYRIGHT
+
+Copyright 2011 Johan Burati (johan.burati@gmail.com)
+
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation
+License, Version 1.2 or any later version published by the
+Free Software Foundation; with no Invariant Sections, with
+no Front-Cover Texts, and with no Back-Cover Texts.
+
+=cut

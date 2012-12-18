@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # Uuencode a file
-# 
+#
 # Johan Burati (johan.burati@gmail.com)
 # Code is licensed under GNU GPL license.
 #

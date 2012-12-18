@@ -12,11 +12,10 @@ use Getopt::Long;
 use Proc::ProcessTable;
 use Term::ANSIColor qw(:constants);
 
-    my %base;
-    my %desc;
-    my %curr;
-    my $max_ps = 5;
-
+my %base;
+my %desc;
+my %curr;
+my $max_ps = 5;
 
 sub dumpps {
    use Data::Dumper;
@@ -30,13 +29,13 @@ sub dumpps {
 sub getbase {
     my ($pbase, $pdesc) = @_;
 
-    require "/etc/pss/base";
+    require "$ENV{HOME}/.config/pss/pss_base";
     our %base;
     foreach (keys %base) {
         $$pbase{$_} = $base{$_};
     }
 
-    require "/etc/pss/desc";
+    require "$ENV{HOME}/.config/pss/pss_desc";
     our %desc;
     foreach (keys %desc) {
         $$pdesc{$_} = $desc{$_};

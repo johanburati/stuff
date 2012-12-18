@@ -12,9 +12,9 @@
 # Requirements:
 # vnstat
 #
-# Copyright (C) 2011 Johan Burati <johan.burati@gmail.com>
+# Johan Burati (johan.burati@gmail.com)
 # Code is licensed under GNU GPL license.
-
+set -e
 
 tib=$((10 * 1024 * 1024))
 gib=$((10 * 1024 ))
@@ -60,7 +60,10 @@ tx_to_kb () {
 # this function check if the command passed in argument exist, if it does not it exits the script
 check_if_command_exists () {
     command -v $1 >/dev/null
-    if [ "$?" -ne 0 ]; then echo  "Error: $1 command not found !"; exit -1; fi
+    if [ "$?" -ne "0" ]; then
+      # echo  "Error: $1 command not found !"
+      return 1
+   fi
 }
 
 # return current tx in KB
@@ -71,17 +74,26 @@ get_current_tx () {
 }
 
 take_action () {
+    lock_file=$HOME/tmp/monitor_tx.$(date "+%F")
     logger -s "monitor_tx: $1"
-    # echo $1 | mailx -s "monitor_tx" johan.burati@gmail.com
+    if [ ! -e $lock_file ]; then
+      echo $1 | mailx -s "monitor_tx" johan.4649@docomo.ne.jp
+      touch $lock_file
+    fi
     # kill network hogs
-    pkill "amuled|transmission|torrent"
+    sudo pkill "amuled|transmission|torrent"
+    sudo pkill -9 "amuled|transmission|torrent"
 }
 
 main () {
-    curr_tx=$(get_current_tx)
-    if [ $((curr_tx)) -gt $((max_tx)) ]; then
-            take_action "current traffic (${curr_tx} KiB) reached the limit (${max_tx} KiB) !"
-    fi
+   curr_tx=$(get_current_tx)
+   echo curr:$curr_tx
+   now=$(date '+%F %T')
+   if [ $((curr_tx)) -gt $((max_tx)) ]; then
+      take_action "$now Current traffic (${curr_tx} KiB) reached the limit (${max_tx} KiB) !"
+   else
+      echo "$now Current traffic (${curr_tx} KiB) DID NOT reached the limit (${max_tx} KiB)" > $HOME/tmp/monitor-tx.log
+   fi
 }
 
 main

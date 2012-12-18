@@ -19,7 +19,7 @@ class WebFetch {
             HttpWebRequest request = WebRequest.Create(BASE_URL+args[0]) as HttpWebRequest;
 
             // Add authentication to request
-            //request.Credentials = new NetworkCredential("jb74630", "password");
+            //request.Credentials = new NetworkCredential("user", "password");
             request.Credentials =	CredentialCache.DefaultCredentials;
 
             // Get response
